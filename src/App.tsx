@@ -10,6 +10,7 @@ import { CandidateFeedbackView } from './components/CandidateFeedbackView';
 import { GlossaryView } from './components/GlossaryView';
 import { ExpertReviewView } from './components/ExpertReviewView';
 import { ScenariosView } from './components/ScenariosView';
+import { ObjectivesView } from './components/ObjectivesView';
 
 const STORAGE_KEY = 'ccaf_exam_prep_user_progress_v1';
 
@@ -25,6 +26,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [initialTopicFilter, setInitialTopicFilter] = useState<number | null>(null);
   const [initialScenarioNumber, setInitialScenarioNumber] = useState<number>(1);
+  const [initialTopicId, setInitialTopicId] = useState<number | null>(null);
 
   // Global Keyboard Shortcuts for Tab Switching
   useEffect(() => {
@@ -36,6 +38,10 @@ export default function App() {
       switch (e.key) {
         case '1':
           setActiveTab('topics');
+          break;
+        case 'o':
+        case 'O':
+          setActiveTab('objectives');
           break;
         case 's':
         case 'S':
@@ -157,6 +163,18 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleNavigateToTopic = (topicId: number) => {
+    setInitialTopicId(topicId);
+    setActiveTab('topics');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToScenario = (scenarioNumber: number) => {
+    setInitialScenarioNumber(scenarioNumber);
+    setActiveTab('scenarios');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
       {/* Top Header & Navigation */}
@@ -181,6 +199,19 @@ export default function App() {
             userProgress={userProgress}
             toggleReviewQA={toggleReviewQA}
             onPracticeTopic={handlePracticeTopic}
+            initialTopicId={initialTopicId}
+          />
+        )}
+
+        {activeTab === 'objectives' && (
+          <ObjectivesView
+            onNavigateToTopic={handleNavigateToTopic}
+            onNavigateToScenario={handleNavigateToScenario}
+            onPracticeTopic={handlePracticeTopic}
+            onNavigateToCheatSheet={() => {
+              setActiveTab('cheatSheet');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 

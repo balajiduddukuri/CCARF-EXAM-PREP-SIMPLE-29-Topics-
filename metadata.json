@@ -1,6 +1,6 @@
 {
   "name": "CCAF Exam Prep & Quick Reference Guide",
-  "description": "Comprehensive Claude Certified Architect: Foundations (CCAR-F / CCAF) prep platform: 29-topic quick reference with code blocks, 6 core production exam scenarios with web search debriefs, 145 scenario questions with trap breakdowns, 60-Q timed simulator, HTML/PDF study exports, and interactive glossary.",
+  "description": "Comprehensive Claude Certified Architect: Foundations (CCAR-F / CCAF) prep platform: 5 domains & 30 published objectives revision checklist, 29-topic quick reference with code blocks, 6 core production exam scenarios with web search debriefs, 145 scenario questions with trap breakdowns, 60-Q timed simulator, HTML/PDF study exports, and interactive glossary.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

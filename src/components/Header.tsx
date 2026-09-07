@@ -23,7 +23,8 @@ import {
   Download,
   Code2,
   ExternalLink,
-  Workflow
+  Workflow,
+  ListChecks,
 } from 'lucide-react';
 import { UserProgress } from '../types';
 import {
@@ -34,6 +35,7 @@ import {
 
 export type ActiveTabType =
   | 'topics'
+  | 'objectives'
   | 'scenarios'
   | 'questions'
   | 'exam'
@@ -318,6 +320,23 @@ export function Header({
           </button>
 
           <button
+            id="nav-tab-objectives"
+            type="button"
+            onClick={() => setActiveTab('objectives')}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${
+              activeTab === 'objectives'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <ListChecks className="w-3.5 h-3.5 text-indigo-400" />
+            <span>30 Objectives</span>
+            <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
+              NEW
+            </span>
+          </button>
+
+          <button
             id="nav-tab-scenarios"
             type="button"
             onClick={() => setActiveTab('scenarios')}
@@ -474,6 +493,12 @@ export function Header({
             </div>
 
             <div className="space-y-3 text-xs">
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-800">
+                <span className="text-slate-300">Switch to 30 Objectives (Blueprint)</span>
+                <span className="font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-indigo-300">
+                  O
+                </span>
+              </div>
               <div className="flex items-center justify-between py-1.5 border-b border-slate-800">
                 <span className="text-slate-300">Switch to 6 Scenarios</span>
                 <span className="font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-amber-300">

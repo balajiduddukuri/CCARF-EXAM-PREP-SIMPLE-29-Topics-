@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { TopicData, DomainId, UserProgress } from '../types';
 import { TOPICS_DATA } from '../data/topicsData';
 import { DOMAINS } from '../data/domainsData';
@@ -28,6 +28,7 @@ interface TopicsViewProps {
   userProgress: UserProgress;
   toggleReviewQA: (qaId: string) => void;
   onPracticeTopic: (topicId: number) => void;
+  initialTopicId?: number | null;
 }
 
 export function TopicsView({
@@ -35,6 +36,7 @@ export function TopicsView({
   userProgress,
   toggleReviewQA,
   onPracticeTopic,
+  initialTopicId,
 }: TopicsViewProps) {
   const [selectedDomain, setSelectedDomain] = useState<DomainId | 'ALL'>('ALL');
   const [selectedScenario, setSelectedScenario] = useState<number | 'ALL'>('ALL');
@@ -42,6 +44,19 @@ export function TopicsView({
   const [expandedTopics, setExpandedTopics] = useState<Record<number, boolean>>({});
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
   const [copiedTopicId, setCopiedTopicId] = useState<number | null>(null);
+
+  // Auto-expand and scroll to initialTopicId if specified (e.g. from ObjectivesView)
+  useEffect(() => {
+    if (initialTopicId) {
+      setExpandedTopics((prev) => ({ ...prev, [initialTopicId]: true }));
+      setTimeout(() => {
+        const el = document.getElementById(`topic-${initialTopicId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
+    }
+  }, [initialTopicId]);
 
   const handleCopyCode = (topicId: number, code: string) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
