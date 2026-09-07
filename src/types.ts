@@ -31,6 +31,13 @@ export interface StudyFocusDetails {
   scenarioMapping: ScenarioMapping;
 }
 
+export interface TopicCodeSnippet {
+  title: string;
+  language: string; // e.g. "typescript", "json", "bash", "markdown"
+  code: string;
+  caption?: string;
+}
+
 export interface TopicData {
   id: number; // 1 to 29
   domainId: DomainId;
@@ -38,6 +45,7 @@ export interface TopicData {
   title: string;
   studyFocus: string;
   studyFocusDetails?: StudyFocusDetails;
+  codeSnippet?: TopicCodeSnippet;
   keys: string[];
   isGap: boolean; // Indicates one of the 5 identified critical gaps
   gapDetails?: {

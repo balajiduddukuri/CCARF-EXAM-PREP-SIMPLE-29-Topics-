@@ -17,6 +17,10 @@ import {
   Compass,
   Cpu,
   Layers,
+  Code2,
+  Copy,
+  Check,
+  Terminal,
 } from 'lucide-react';
 
 interface TopicsViewProps {
@@ -37,6 +41,41 @@ export function TopicsView({
   const [onlyGaps, setOnlyGaps] = useState(false);
   const [expandedTopics, setExpandedTopics] = useState<Record<number, boolean>>({});
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
+  const [copiedTopicId, setCopiedTopicId] = useState<number | null>(null);
+
+  const handleCopyCode = (topicId: number, code: string) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(code)
+        .then(() => {
+          setCopiedTopicId(topicId);
+          setTimeout(() => setCopiedTopicId(null), 2000);
+        })
+        .catch(() => {
+          fallbackCopy(code, topicId);
+        });
+    } else {
+      fallbackCopy(code, topicId);
+    }
+  };
+
+  const fallbackCopy = (text: string, topicId: number) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedTopicId(topicId);
+      setTimeout(() => setCopiedTopicId(null), 2000);
+    } catch (e) {
+      console.error('Copy failed', e);
+    }
+  };
 
   // Filter topics based on search query, domain, scenario, and gap filter
   const filteredTopics = useMemo(() => {
@@ -79,13 +118,19 @@ export function TopicsView({
             topic.studyFocusDetails.scenarioMapping.scenarioName.toLowerCase().includes(query) ||
             topic.studyFocusDetails.scenarioMapping.architectTestFocus.toLowerCase().includes(query)
           : false;
+        const matchesCode = topic.codeSnippet
+          ? topic.codeSnippet.title.toLowerCase().includes(query) ||
+            topic.codeSnippet.code.toLowerCase().includes(query) ||
+            (topic.codeSnippet.caption && topic.codeSnippet.caption.toLowerCase().includes(query))
+          : false;
         return (
           matchesTitle ||
           matchesFocus ||
           matchesKeys ||
           matchesDeepDive ||
           matchesQA ||
-          matchesDetails
+          matchesDetails ||
+          matchesCode
         );
       }
       return true;
@@ -426,6 +471,63 @@ export function TopicsView({
                       <p className="text-amber-800 font-medium bg-amber-100/70 p-1.5 rounded">
                         ⚡ <strong>Actionable Rule:</strong> {topic.gapDetails.actionableTakeaway}
                       </p>
+                    </div>
+                  )}
+
+                  {/* Quick Reference Code Snippet Block (Always Present for Each Topic) */}
+                  {topic.codeSnippet && (
+                    <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950 overflow-hidden shadow-sm">
+                      {/* Code Snippet Header */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 bg-slate-900 border-b border-slate-800">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Code2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="text-xs font-bold text-slate-200 truncate">
+                            Quick Reference: {topic.codeSnippet.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="px-2 py-0.5 text-[10px] font-mono font-semibold uppercase rounded bg-slate-800 text-emerald-400 border border-slate-700/80">
+                            {topic.codeSnippet.language}
+                          </span>
+                          <button
+                            type="button"
+                            id={`copy-snippet-${topic.id}`}
+                            onClick={() => handleCopyCode(topic.id, topic.codeSnippet!.code)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-[11px] font-medium text-slate-200 border border-slate-700 transition"
+                            title="Copy code snippet to clipboard"
+                          >
+                            {copiedTopicId === topic.id ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span className="text-emerald-400 font-semibold">Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                                <span>Copy Snippet</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Code Snippet Pre Block */}
+                      <div className="p-3.5 sm:p-4 overflow-x-auto bg-slate-950">
+                        <pre className="text-xs sm:text-[13px] font-mono leading-relaxed text-slate-200 whitespace-pre selection:bg-indigo-600 selection:text-white">
+                          <code>{topic.codeSnippet.code}</code>
+                        </pre>
+                      </div>
+
+                      {/* Caption / Key Architectural Takeaway */}
+                      {topic.codeSnippet.caption && (
+                        <div className="px-3.5 py-2.5 bg-slate-900/90 border-t border-slate-800/80 flex items-start gap-2 text-[11px] sm:text-xs text-slate-300">
+                          <Terminal className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-slate-200 font-semibold">Exam Takeaway:</strong>{' '}
+                            {topic.codeSnippet.caption}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
 

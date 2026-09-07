@@ -1,5 +1,6 @@
 import { TopicData } from '../types';
 import { TOPIC_STUDY_FOCUS_MAP } from './topicStudyFocusData';
+import { TOPIC_CODE_SNIPPETS_MAP } from './topicCodeSnippetsData';
 
 const RAW_TOPICS_DATA: TopicData[] = [
   {
@@ -814,9 +815,11 @@ const RAW_TOPICS_DATA: TopicData[] = [
 
 export const TOPICS_DATA: TopicData[] = RAW_TOPICS_DATA.map((topic) => {
   const details = TOPIC_STUDY_FOCUS_MAP[topic.id];
+  const snippet = TOPIC_CODE_SNIPPETS_MAP[topic.id];
   return {
     ...topic,
     studyFocusDetails: details,
+    codeSnippet: snippet,
     studyFocus: details ? details.principle : topic.studyFocus,
   };
 });
