@@ -12,10 +12,12 @@ import {
   Eye,
   EyeOff,
   Printer,
-  ChevronRight
+  ChevronRight,
+  FileCode
 } from 'lucide-react';
 import { GLOSSARY_TERMS, GlossaryTerm } from '../data/glossaryData';
 import { DomainId } from '../types';
+import { downloadStudyGuideHtml } from '../utils/exportHtml';
 
 export function GlossaryView() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -184,6 +186,16 @@ export function GlossaryView() {
             >
               <Printer className="w-3.5 h-3.5 text-slate-500" />
               <span>Print</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => downloadStudyGuideHtml('glossary')}
+              title="Export glossary as standalone HTML"
+              className="hidden sm:flex items-center gap-1 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 transition"
+            >
+              <FileCode className="w-3.5 h-3.5 text-emerald-600" />
+              <span>HTML</span>
             </button>
           </div>
         </div>

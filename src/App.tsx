@@ -9,6 +9,7 @@ import { ReadinessDashboard } from './components/ReadinessDashboard';
 import { CandidateFeedbackView } from './components/CandidateFeedbackView';
 import { GlossaryView } from './components/GlossaryView';
 import { ExpertReviewView } from './components/ExpertReviewView';
+import { ScenariosView } from './components/ScenariosView';
 
 const STORAGE_KEY = 'ccaf_exam_prep_user_progress_v1';
 
@@ -23,8 +24,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTabType>('topics');
   const [searchQuery, setSearchQuery] = useState('');
   const [initialTopicFilter, setInitialTopicFilter] = useState<number | null>(null);
+  const [initialScenarioNumber, setInitialScenarioNumber] = useState<number>(1);
 
-  // Global Keyboard Shortcuts for Tab Switching (1 - 8)
+  // Global Keyboard Shortcuts for Tab Switching
   useEffect(() => {
     const handleTabKeyDown = (e: KeyboardEvent) => {
       // Don't switch if typing in input/textarea
@@ -34,6 +36,10 @@ export default function App() {
       switch (e.key) {
         case '1':
           setActiveTab('topics');
+          break;
+        case 's':
+        case 'S':
+          setActiveTab('scenarios');
           break;
         case '2':
           setActiveTab('questions');
@@ -178,6 +184,17 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'scenarios' && (
+          <ScenariosView
+            initialScenarioNumber={initialScenarioNumber}
+            onPracticeTopic={handlePracticeTopic}
+            onNavigateToFeedback={() => {
+              setActiveTab('feedback');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
         {activeTab === 'questions' && (
           <QuestionBankView
             initialTopicFilter={initialTopicFilter}
@@ -237,7 +254,7 @@ export default function App() {
             Claude Certified Architect: Foundations (CCAR-F / CCAF) Reference Guide & Exam Simulator
           </p>
           <p className="mt-1 text-slate-400">
-            Aligned with official syllabus: 5 Domains (D1 27%, D2 18%, D3 20%, D4 20%, D5 15%) · 29 Topics · 145 Verified Scenario Questions · 720/1000 Passing Score
+            Aligned with official syllabus: 5 Domains (D1 27%, D2 18%, D3 20%, D4 20%, D5 15%) · 29 Topics · 6 Core Production Scenarios · 145 Verified Scenario Questions · 720/1000 Passing Score
           </p>
         </div>
       </footer>

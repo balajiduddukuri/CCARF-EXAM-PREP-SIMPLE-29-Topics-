@@ -823,3 +823,6 @@ export const TOPICS_DATA: TopicData[] = RAW_TOPICS_DATA.map((topic) => {
     studyFocus: details ? details.principle : topic.studyFocus,
   };
 });
+
+export const TOPICS = TOPICS_DATA;
+

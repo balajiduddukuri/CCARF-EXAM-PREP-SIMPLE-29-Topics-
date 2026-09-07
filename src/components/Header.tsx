@@ -16,18 +16,31 @@ import {
   Pause,
   RotateCcw,
   Keyboard,
-  X
+  X,
+  FileCode,
+  ChevronDown,
+  Check,
+  Download,
+  Code2,
+  ExternalLink,
+  Workflow
 } from 'lucide-react';
 import { UserProgress } from '../types';
+import {
+  downloadStudyGuideHtml,
+  openStudyGuideHtmlInNewTab,
+  ExportHtmlType
+} from '../utils/exportHtml';
 
 export type ActiveTabType =
   | 'topics'
+  | 'scenarios'
   | 'questions'
   | 'exam'
   | 'cheatSheet'
+  | 'expertReview'
   | 'feedback'
   | 'glossary'
-  | 'expertReview'
   | 'progress';
 
 interface HeaderProps {
@@ -61,6 +74,24 @@ export function Header({
   const [timerMode, setTimerMode] = useState<'POMODORO' | 'EXAM_PACE'>('POMODORO');
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState<boolean>(false);
+  const [showHtmlMenu, setShowHtmlMenu] = useState<boolean>(false);
+  const [htmlExportStatus, setHtmlExportStatus] = useState<string | null>(null);
+
+  const handleHtmlDownload = (type: ExportHtmlType) => {
+    downloadStudyGuideHtml(type);
+    setShowHtmlMenu(false);
+    setHtmlExportStatus(
+      type === 'snippets-only'
+        ? 'Code Cheatsheet Downloaded!'
+        : 'HTML Study Guide Downloaded!'
+    );
+    setTimeout(() => setHtmlExportStatus(null), 3000);
+  };
+
+  const handleHtmlOpenNewTab = (type: ExportHtmlType) => {
+    openStudyGuideHtmlInNewTab(type);
+    setShowHtmlMenu(false);
+  };
 
   useEffect(() => {
     let interval: any = null;
@@ -185,6 +216,86 @@ export function Header({
             <Printer className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden sm:inline">PDF</span>
           </button>
+
+          {/* Export to HTML (Next to PDF) */}
+          <div className="relative inline-flex items-stretch rounded-lg shadow-xs">
+            <button
+              id="export-html-btn"
+              type="button"
+              onClick={() => handleHtmlDownload('complete')}
+              title="Export Standalone HTML Study Guide (Offline)"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-l-lg border-y border-l border-slate-700 transition"
+            >
+              {htmlExportStatus ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <FileCode className="w-3.5 h-3.5 text-emerald-400" />
+              )}
+              <span className="hidden sm:inline">HTML</span>
+            </button>
+            <button
+              id="export-html-options-btn"
+              type="button"
+              onClick={() => setShowHtmlMenu((prev) => !prev)}
+              title="HTML Export Options"
+              className="px-1.5 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-r-lg border border-slate-700 transition"
+            >
+              <ChevronDown className={`w-3 h-3 transition-transform ${showHtmlMenu ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Options */}
+            {showHtmlMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowHtmlMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-1.5 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1.5 z-50 text-xs">
+                  <div className="px-2.5 py-1.5 border-b border-slate-800 mb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Export Standalone HTML (Offline)
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleHtmlDownload('complete')}
+                    className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-slate-200 hover:text-white flex items-start gap-2.5 transition"
+                  >
+                    <Download className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-semibold text-slate-100">Full Master Study Guide</div>
+                      <div className="text-[11px] text-slate-400">All 29 topics, 29 code blocks, 6 scenarios & Q&A</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleHtmlDownload('snippets-only')}
+                    className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-slate-200 hover:text-white flex items-start gap-2.5 transition"
+                  >
+                    <Code2 className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-semibold text-slate-100">29 Code Snippets Cheatsheet</div>
+                      <div className="text-[11px] text-slate-400">Focused reference of all architectural code blocks</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleHtmlOpenNewTab('complete')}
+                    className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-slate-200 hover:text-white flex items-start gap-2.5 transition"
+                  >
+                    <ExternalLink className="w-4 h-4 text-sky-400 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-semibold text-slate-100">Open in New Tab</div>
+                      <div className="text-[11px] text-slate-400">View standalone HTML in browser immediately</div>
+                    </div>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -204,6 +315,23 @@ export function Header({
             <BookOpen className="w-3.5 h-3.5" />
             <span>29 Topics</span>
             <span className="text-[10px] text-slate-400 opacity-60 hidden xl:inline">1</span>
+          </button>
+
+          <button
+            id="nav-tab-scenarios"
+            type="button"
+            onClick={() => setActiveTab('scenarios')}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${
+              activeTab === 'scenarios'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Workflow className="w-3.5 h-3.5 text-amber-400" />
+            <span>6 Scenarios</span>
+            <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+              CORE
+            </span>
           </button>
 
           <button
@@ -347,7 +475,13 @@ export function Header({
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between py-1.5 border-b border-slate-800">
-                <span className="text-slate-300">Switch Tabs 1 – 8</span>
+                <span className="text-slate-300">Switch to 6 Scenarios</span>
+                <span className="font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-amber-300">
+                  S
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-800">
+                <span className="text-slate-300">Switch Tabs (Topics, Q-Bank, etc.)</span>
                 <span className="font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-indigo-300">
                   1 – 8
                 </span>
