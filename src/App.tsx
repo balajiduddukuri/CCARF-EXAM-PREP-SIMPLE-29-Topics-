@@ -234,6 +234,7 @@ export default function App() {
             onRecordAttempt={handleRecordAttempt}
             onToggleBookmark={handleToggleBookmark}
             onResetAttempts={handleResetAttempts}
+            onNavigateToTopic={handleNavigateToTopic}
           />
         )}
 
